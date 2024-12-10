@@ -2,6 +2,8 @@
 
 A Docker-based tool that automatically renames your PC game folders using IGDB.com data. It adds release years and cleans up folder names, transforming folders like `Dead.Space-RUNE` into `Dead Space (2008)`.
 
+> **Note**: This tool is designed for organizing archived game folders (like GOG downloads stored on a NAS) and not for renaming installed games. It's perfect for cleaning up your game backup folders, ensuring consistent naming across your collection.
+
 ## Features
 
 - Automatically fetches correct game names and release years from IGDB
@@ -9,6 +11,18 @@ A Docker-based tool that automatically renames your PC game folders using IGDB.c
 - Cleans up release group names and version numbers for consistent naming
 - Cleans up common naming patterns (release groups, dots, underscores)
 - Runs in Docker for easy deployment on any system
+
+## Use Case
+
+This tool is ideal for scenarios like:
+- Organizing GOG game downloads in your backup storage
+- Maintaining a clean game archive on your NAS
+- Standardizing folder names in your game collection
+
+It is **not** intended for:
+- Renaming installed games
+- Modifying game installation directories
+- Renaming active game folders
 
 ## Prerequisites
 
@@ -52,7 +66,7 @@ A Docker-based tool that automatically renames your PC game folders using IGDB.c
          - IGDB_CLIENT_ID=your_client_id_here     # Get from Twitch Developer Console
          - IGDB_CLIENT_SECRET=your_secret_here    # Get from Twitch Developer Console
        volumes:
-         - "C:/Games:/games"  # Windows example
+         - "/path/to/games:/games"  # Windows example
    ```
 
 2. Run the container:
