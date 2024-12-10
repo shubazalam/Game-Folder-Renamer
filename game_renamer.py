@@ -55,6 +55,9 @@ class IGDBClient:
             r'\s*-?\s*Complete Edition$',
             r'\s*-?\s*Game of the Year Edition$',
             r'\s*-?\s*GOTY Edition$',
+            r'\s*-?\s*Remaster$',
+            r'\s*-?\s*Remake$',
+            r'\s*-?\s*Remastered$',
             r'\s*-?\s*Deluxe Edition$'
         ]
         
