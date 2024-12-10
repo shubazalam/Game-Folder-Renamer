@@ -72,7 +72,7 @@ class IGDBClient:
             # Multiple matches found - ask user to choose
             print(f"\nMultiple matches found for '{search_query}':")
             for i, game in enumerate(games, 1):
-                year = datetime.fromtimestamp(game["first_release_date"]).year
+                year = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
                 # Check if it's a remake/remaster
                 version_type = " (Remake/Remaster)" if "version_parent" in game else ""
                 print(f"{i}. {game['name']} ({year}){version_type}")
@@ -85,7 +85,7 @@ class IGDBClient:
                     choice_idx = int(choice) - 1
                     if 0 <= choice_idx < len(games):
                         game = games[choice_idx]
-                        release_date = datetime.fromtimestamp(game["first_release_date"]).year
+                        release_date = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
                         return (game["name"], release_date)
                     else:
                         print("Invalid choice. Please try again.")
@@ -154,7 +154,8 @@ class GameFolderRenamer:
         
         if game_info:
             game_name, release_year = game_info
-            new_name = f"{game_name} ({release_year})"
+            # Only add year if it's not TBA
+            new_name = f"{game_name} ({release_year})" if release_year != "TBA" else game_name
             
             old_path = os.path.join(self.base_path, folder_name)
             new_path = os.path.join(self.base_path, new_name)
