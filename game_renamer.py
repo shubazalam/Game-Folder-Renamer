@@ -38,26 +38,66 @@ class IGDBClient:
         """Search for a game and return its official name and release year"""
         self.ensure_authenticated()
         
+        # Try different variations of the name
+        search_variations = []
+        
         # Clean up the search query
         search_query = self._clean_folder_name(game_name)
+        
+        # Add base search
+        search_variations.append(search_query)
+        
+        # Common edition patterns to try removing
+        edition_patterns = [
+            r'\s*-?\s*Enhanced Edition$',
+            r'\s*-?\s*Definitive Edition$',
+            r'\s*-?\s*Anniversary$',
+            r'\s*-?\s*Complete Edition$',
+            r'\s*-?\s*Game of the Year Edition$',
+            r'\s*-?\s*GOTY Edition$',
+            r'\s*-?\s*Deluxe Edition$'
+        ]
+        
+        # Try variations without edition names
+        base_name = search_query
+        for pattern in edition_patterns:
+            cleaned_name = re.sub(pattern, '', base_name)
+            if cleaned_name != base_name:
+                base_name = cleaned_name
+                search_variations.append(cleaned_name)
+        
+        # Add variation with colon
+        if " " in base_name:
+            first_word, rest = base_name.split(" ", 1)
+            with_colon = f"{first_word}: {rest}"
+            search_variations.append(with_colon)
         
         headers = {
             "Client-ID": self.client_id,
             "Authorization": f"Bearer {self.access_token}"
         }
         
-        body = f'''
-            search "{search_query}";
-            fields name, first_release_date, version_parent;
-            where category = 0 & platforms = (6);
-            limit 5;
-        '''
-        
-        response = requests.post(
-            "https://api.igdb.com/v4/games",
-            headers=headers,
-            data=body
-        )
+        # Try each variation until we find a match
+        for query in search_variations:
+            body = f'''
+                search "{query}";
+                fields name, first_release_date, version_parent;
+                where category = 0 & platforms = (6);
+                limit 5;
+            '''
+            
+            response = requests.post(
+                "https://api.igdb.com/v4/games",
+                headers=headers,
+                data=body
+            )
+            
+            if response.status_code == 200:
+                games = response.json()
+                if games:
+                    break  # Found some matches, stop trying variations
+        else:
+            return None  # No matches found with any variation
         
         if response.status_code == 200:
             games = response.json()
@@ -101,6 +141,7 @@ class IGDBClient:
             r'-\w+$',  # Remove release group names like "-RUNE"
             r'v\d+(\.\d+)*',  # Remove version numbers like v1.0.12
             r'\([^)]*\)',  # Remove anything in parentheses
+            r'Enhanced Edition$',  # Remove "Enhanced Edition" from the end
         ]
         
         name = folder_name
