@@ -83,7 +83,7 @@ class IGDBClient:
                 search "{query}";
                 fields name, first_release_date, version_parent;
                 where category = 0 & platforms = (6);
-                limit 5;
+                limit 15;  # Get more results but show 5 at a time
             '''
             
             response = requests.post(
@@ -110,27 +110,47 @@ class IGDBClient:
                 return (game["name"], release_date)
             
             # Multiple matches found - ask user to choose
-            print(f"\nMultiple matches found for '{search_query}':")
-            for i, game in enumerate(games, 1):
-                year = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
-                # Check if it's a remake/remaster
-                version_type = " (Remake/Remaster)" if "version_parent" in game else ""
-                print(f"{i}. {game['name']} ({year}){version_type}")
+            page = 0
+            page_size = 5
             
             while True:
-                try:
-                    choice = input("\nPlease choose a number (or 's' to skip): ")
-                    if choice.lower() == 's':
-                        return None
-                    choice_idx = int(choice) - 1
-                    if 0 <= choice_idx < len(games):
-                        game = games[choice_idx]
-                        release_date = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
-                        return (game["name"], release_date)
-                    else:
-                        print("Invalid choice. Please try again.")
-                except ValueError:
-                    print("Invalid input. Please enter a number or 's' to skip.")
+                print(f"\nMultiple matches found for '{search_query}':")
+                start_idx = page * page_size
+                end_idx = min(start_idx + page_size, len(games))
+                
+                for i, game in enumerate(games[start_idx:end_idx], start_idx + 1):
+                    year = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
+                    # Check if it's a remake/remaster
+                    version_type = " (Remake/Remaster)" if "version_parent" in game else ""
+                    print(f"{i}. {game['name']} ({year}){version_type}")
+                
+                if end_idx < len(games):
+                    print("\nType 'm' for more results")
+
+                while True:
+                    try:
+                        choice = input("\nPlease choose a number (or 's' to skip, 'm' for more): ").lower()
+                        if choice == 's':
+                            return None
+                        if choice == 'm':
+                            if end_idx < len(games):
+                                page += 1
+                                break  # Break inner loop to show next page
+                            else:
+                                print("No more results to show.")
+                                continue
+                        choice_idx = int(choice) - 1
+                        if 0 <= choice_idx < len(games):
+                            game = games[choice_idx]
+                            release_date = datetime.fromtimestamp(game.get("first_release_date", 0)).year if game.get("first_release_date") else "TBA"
+                            return (game["name"], release_date)
+                        else:
+                            print("Invalid choice. Please try again.")
+                    except ValueError:
+                        print("Invalid input. Please enter a number, 's' to skip, or 'm' for more.")
+                
+                if choice != 'm':  # If we didn't request more results, exit the outer loop
+                    break
     
         return None
 
