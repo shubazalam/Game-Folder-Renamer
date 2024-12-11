@@ -2,7 +2,10 @@
 
 A Docker-based tool that automatically renames your PC game folders using IGDB.com data. It adds release years and cleans up folder names, transforming folders like `Dead.Space-RUNE` into `Dead Space (2008)`.
 
-> **Note**: This tool is designed for organizing archived game folders (like GOG downloads stored on a NAS) and not for renaming installed games. It's perfect for cleaning up your game backup folders, ensuring consistent naming across your collection.
+> **Note**: This tool is designed for organizing archived PC game folders (like GOG downloads stored on a NAS) and not for renaming installed games. It's perfect for cleaning up your PC game backup folders, ensuring consistent naming across your collection.
+
+>
+> **Important**: This tool is specifically for PC games only. It does not support console ROMs, Mac games, or other platforms.
 
 ## Features
 
@@ -15,7 +18,7 @@ A Docker-based tool that automatically renames your PC game folders using IGDB.c
 ## Use Case
 
 This tool is ideal for scenarios like:
-- Organizing GOG game downloads in your backup storage
+- Organizing PC game downloads (GOG, Steam backups, etc.) in your backup storage
 - Maintaining a clean game archive on your NAS
 - Standardizing folder names in your game collection
 
@@ -23,6 +26,8 @@ It is **not** intended for:
 - Renaming installed games
 - Modifying game installation directories
 - Renaming active game folders
+- Console ROMs or emulator games
+- Mac or other non-PC platforms
 
 ## Prerequisites
 
