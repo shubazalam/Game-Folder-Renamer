@@ -180,9 +180,10 @@ class IGDBClient:
         return name
 
 class GameFolderRenamer:
-    def __init__(self, igdb_client: IGDBClient, base_path: str):
+    def __init__(self, igdb_client: IGDBClient, base_path: str, dry_run: bool = False):
         self.igdb_client = igdb_client
         self.base_path = base_path
+        self.dry_run = dry_run
         self.stats = {
             'total': 0,
             'renamed': 0,
@@ -225,7 +226,8 @@ class GameFolderRenamer:
             new_path = os.path.join(self.base_path, new_name)
             
             try:
-                os.rename(old_path, new_path)
+                if not self.dry_run:
+                    os.rename(old_path, new_path)
                 print(f"Renamed: {folder_name} -> {new_name}")
                 self.stats['renamed'] += 1
             except OSError as e:
