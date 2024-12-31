@@ -82,13 +82,13 @@ class IGDBClient:
         
         # Try each variation until we find a match
         for query in search_variations:
-            body = f'''
-                search "{query}";
-                fields name, first_release_date, version_parent;
-                where category = 0 & platforms = (6);
-                limit 15;  # Get more results but show 5 at a time
-            '''
-            
+            body = (
+                "search \"{}\";"
+                "fields name, first_release_date, version_parent;"
+                "where category = 0 & platforms = (6);"
+                "limit 15;"  # Get more results but show 5 at a time
+            ).format(query)
+
             response = requests.post(
                 "https://api.igdb.com/v4/games",
                 headers=headers,
