@@ -6,7 +6,7 @@ def main():
     client_id = os.environ.get('IGDB_CLIENT_ID')
     client_secret = os.environ.get('IGDB_CLIENT_SECRET')
     games_folder = os.environ.get('GAMES_FOLDER', '/games')
-    dry_run = os.environ.get('DRY_RUN', 'false').lower()
+    dry_run = os.environ.get('DRY_RUN', 'false').lower() == "true"
     
     if not all([client_id, client_secret]):
         print("Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET environment variables")
